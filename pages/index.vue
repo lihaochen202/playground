@@ -1,0 +1,94 @@
+<script setup lang="ts">
+import { sleep } from '@lihaochen/kite'
+import type { CSSProperties } from 'vue'
+
+useHead({
+  title: '(っ˘з(˘⌣˘ ) ♡',
+})
+
+const input = ref(0)
+async function handleGenerate() {
+  clearCount()
+
+  if (input.value <= 0)
+    return
+
+  await nextTick()
+  await sleep(300)
+  setStyle(input.value)
+  stepIncrementCount(input.value ** 2)
+}
+
+const count = ref(0)
+function clearCount() {
+  count.value = 0
+}
+async function stepIncrementCount(max: number) {
+  if (count.value < max) {
+    count.value += 1
+    await sleep(20)
+    stepIncrementCount(max)
+  }
+}
+
+const el = ref<HTMLElement>()
+const { width } = useElementBounding(el)
+const style = shallowRef<CSSProperties>({})
+function setStyle(cols: number) {
+  style.value = {
+    ...getGridTemplate(cols),
+    height: `${width.value}px`,
+  }
+}
+function getGridTemplate(cols: number): CSSProperties {
+  return {
+    gridTemplateColumns: `repeat(${cols}, 1fr)`,
+    gridTemplateRows: `repeat(${cols}, 1fr)`,
+  }
+}
+</script>
+
+<template>
+  <div flex="~ col items-center" gap4 p="x2 y5">
+    <div flex="~ center" gap2 wfull text-sm>
+      <input
+        v-model.number="input"
+        placeholder="Please enter count"
+        flex-auto max-w80 h10 p="x3 y2"
+        outline="focus-visible:none"
+        rd-md border="~ slate3 focus-visible:blue6"
+      >
+      <button
+        flex="~ center" h10 px3
+        rd-md border="~ blue6"
+        bg-blue6 text-white
+        transition scale="active:98"
+        @click="handleGenerate"
+      >
+        Generate
+      </button>
+    </div>
+    <div wfull max-w-screen-lg>
+      <ul ref="el" grid gap1 wfull :style="style">
+        <TransitionGroup name="list">
+          <li
+            v-for="cur in count" :key="cur"
+            rd-md bg-gray
+          />
+        </TransitionGroup>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<style>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.3s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+}
+</style>
