@@ -6,8 +6,10 @@ useHead({
   title: '(っ˘з(˘⌣˘ ) ♡',
 })
 
+const { resume, pause } = useIntervalFn(stepIncrementCount, 20, { immediate: false })
 const input = ref(0)
 async function handleGenerate() {
+  pause()
   clearCount()
 
   if (input.value <= 0)
@@ -16,19 +18,24 @@ async function handleGenerate() {
   await nextTick()
   await sleep(300)
   setStyle(input.value)
-  stepIncrementCount(input.value ** 2)
+  startStepIncrementCount(input.value ** 2)
 }
 
 const count = ref(0)
+const max = ref(0)
 function clearCount() {
   count.value = 0
+  max.value = 0
 }
-async function stepIncrementCount(max: number) {
-  if (count.value < max) {
+function startStepIncrementCount(val: number) {
+  max.value = val
+  resume()
+}
+function stepIncrementCount() {
+  if (count.value < max.value)
     count.value += 1
-    await sleep(20)
-    stepIncrementCount(max)
-  }
+  else
+    pause()
 }
 
 const el = ref<HTMLElement>()
