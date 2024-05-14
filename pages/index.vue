@@ -46,10 +46,21 @@ function getGridTemplate(cols: number): CSSProperties {
     gridTemplateRows: `repeat(${cols}, 1fr)`,
   }
 }
+
+const current = ref(-1)
+function resetCurrent() {
+  current.value = -1
+}
+function changeCurrent(val: number) {
+  current.value = val
+}
 </script>
 
 <template>
-  <div flex="~ col items-center" gap4 p="x2 y5">
+  <div
+    flex="~ col items-center" gap4 min-h-screen p="x2 y5"
+    @click="resetCurrent"
+  >
     <div flex="~ center" gap2 wfull text-sm>
       <input
         v-model.number="input"
@@ -57,6 +68,7 @@ function getGridTemplate(cols: number): CSSProperties {
         flex-auto max-w80 h10 p="x3 y2"
         outline="focus-visible:none"
         rd-md border="~ slate3 focus-visible:blue6"
+        @keydown.enter="handleGenerate"
       >
       <button
         flex="~ center" h10 px3
@@ -73,7 +85,9 @@ function getGridTemplate(cols: number): CSSProperties {
         <TransitionGroup name="list">
           <li
             v-for="cur in count" :key="cur"
-            rd-md bg-gray
+            rd-md
+            :class="cur === current ? 'bg-blue6' : 'bg-gray'"
+            @click.stop="changeCurrent(cur)"
           />
         </TransitionGroup>
       </ul>
