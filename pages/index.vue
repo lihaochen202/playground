@@ -35,15 +35,11 @@ const el = ref<HTMLElement>()
 const { width } = useElementBounding(el)
 const style = shallowRef<CSSProperties>({})
 function setStyle(cols: number) {
+  const gap = 4
+  const size = (width.value - (cols - 1) * gap) / cols
   style.value = {
-    ...getGridTemplate(cols),
-    height: `${width.value}px`,
-  }
-}
-function getGridTemplate(cols: number): CSSProperties {
-  return {
-    gridTemplateColumns: `repeat(${cols}, 1fr)`,
-    gridTemplateRows: `repeat(${cols}, 1fr)`,
+    width: `${size}px`,
+    height: `${size}px`,
   }
 }
 
@@ -81,11 +77,12 @@ function changeCurrent(val: number) {
       </button>
     </div>
     <div wfull max-w-screen-lg>
-      <ul ref="el" grid gap1 wfull :style="style">
+      <ul ref="el" flex="~ wrap" gap1 wfull>
         <TransitionGroup name="list">
           <li
             v-for="cur in count" :key="cur"
-            rd-md
+            flex-none rd-md
+            :style="style"
             :class="cur === current ? 'bg-blue6' : 'bg-gray'"
             @click.stop="changeCurrent(cur)"
           />
