@@ -15,6 +15,8 @@ async function handleGenerate() {
   if (input.value <= 0)
     return
 
+  input.value = Math.floor(input.value)
+
   await nextTick()
   await sleep(300)
   setStyle(input.value)
